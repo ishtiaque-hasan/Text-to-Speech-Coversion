@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Conversion</title>
+</head>
+<style>
+    div {
+        margin-top: 50vh;
+        margin-left: 60vh;
+    }
+    
+    #btnSpeak:hover {
+        background-color: green;
+        color: whitesmoke;
+        border: none;
+        padding: 5px 10px;
+    }
+</style>
+
+<body>
+    <div>
+        Select Voice: <select name="" id="voiceList"></select>
+        <br><br>
+
+        <input type="text" id="txtInput" placeholder="Write down here">
+        <br><br>
+
+        <button id="btnSpeak">Speak!</button>
+
+    </div>
+
+    <script>
+        var voiceList = document.querySelector('#voiceList');
+        var txtInput = document.querySelector('#txtInput');
+        var btnSpeak = document.querySelector('#btnSpeak');
+
+        var tts = window.speechSynthesis;
+        var voices = [];
+
+        GetVoices();
+
+        if (speechSynthesis !== undefined) {
+            speechSynthesis.onvoiceschanged = GetVoices;
+        }
+
+        btnSpeak.addEventListener('click', () => {
+            var toSpeak = new SpeechSynthesisUtterance(txtInput.value);
+            var selectedVoiceName = voiceList.selectedOptions[0].getAttribute('data-name');
+            voices.forEach((voice) => {
+
+                if (voice.name === selectedVoiceName) {
+                    toSpeak.voice = voice;
+                }
+            });
+            tts.speak(toSpeak);
+        });
+
+
+        function GetVoices() {
+            voices = tts.getVoices();
+            voiceList.innerHTML = '';
+            voices.forEach((voice) => {
+                var listItem = document.createElement('option');
+                listItem.textContent = voice.name;
+                listItem.setAttribute('data-lang', voice.lang);
+                listItem.setAttribute('data-name', voice.name);
+
+                voiceList.appendChild(listItem);
+            });
+            voiceList.selectedIndex = 0;
+
+        }
+    </script>
+
+</body>
+
+</html>
